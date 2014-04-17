@@ -9,6 +9,8 @@ import nltk.classify
 import re, collections
 import sys
 import twitter
+import operator
+
 dic={}
 tweetsinfo={}
 count = 0;
@@ -342,8 +344,11 @@ extract_entities(text)
 #	print i,dic[i]
 
 	
-cou=0;	
-for entity in dic.keys():
+cou=0;
+sorted_dic = sorted(dic.iteritems(), key=operator.itemgetter(1))
+sorted_dic.reverse()
+for en in sorted_dic:
+	entity=en[0]
 	tweets = getData(entity); # we need to get the tweets related to a particular entity and process each of those , There is some API 
 #tweets=["I feel happy this morning","Larry is my friend","I do not like that man","My house is not great","Your song is annoying"];	   
 	#tweets=tt # for now just for testing tweets are taken as the training tweets 
