@@ -8,6 +8,7 @@ import pprint
 import nltk.classify
 import re, collections
 import sys
+import twitter
 dic={}
 tweetsinfo={}
 count = 0;
@@ -231,7 +232,7 @@ def replaceTwoOrMore(s):
 
 #get tweets related to a particular entity // NOt working
 def getData(keyword):
-	print keyword
+	'''print keyword
 	url = 'http://search.twitter.com/search.json'
 	data = {'q': keyword, 'lang': 'en', 'result_type': 'recent'}
 	params = urllib.urlencode(data)
@@ -246,7 +247,25 @@ def getData(keyword):
 		return tweets
 	except urllib2.URLError, e:
 		print "Error"
-	return tweets
+	return tweets'''
+	api = twitter.Api(
+ 
+	   consumer_key= "n2Zhxm1IFNJd80OmmmpPnypwx",
+	   consumer_secret= "j2R7UPSPQuIt5FBjXfMw28PymjQvrGycgCkSGOLAysyAEHuzzv",
+	   access_token_key= "1274638267-q4SuQWrINd7gG1i2vObR8nGxvVKNURsHmixAXV8",
+	   access_token_secret= "iUyDBW4poPOmp1kgO7QrZyO8SOXrfGd5tj5ph1K51eo31"
+	)
+	search = api.GetSearch(term=keyword, lang='en', result_type='mixed', count=300)
+	#search = api.GetSearch( term='google', lang='en', until=2013-04-15, count=1000, max_id='')
+	ret=[]
+	for t in search:
+#print t.user.screen_name + ' (' + t.created_at + ')'
+		 #Add the .encode to force encoding
+# print t.text.encode('utf-8')
+		ret.append(t.text.encode('utf-8'))
+#		ret.append(t.text)
+		 
+	return ret
 
 
 #pre-processing of tweets ,removing url,hash,extra spaces and all
@@ -310,8 +329,8 @@ def preprocessing():
 
 #main code starts 
 preprocessing()
-print positive
-print negative
+#print positive
+#print negative
 	     
 inp=open("doc.txt",'r');
 
@@ -323,11 +342,11 @@ extract_entities(text)
 #	print i,dic[i]
 
 	
-	
+cou=0;	
 for entity in dic.keys():
-	#tweets = getData(entity); // we need to get the tweets related to a particular entity and process each of those , There is some API 
+	tweets = getData(entity); # we need to get the tweets related to a particular entity and process each of those , There is some API 
 #tweets=["I feel happy this morning","Larry is my friend","I do not like that man","My house is not great","Your song is annoying"];	   
-	tweets=tt # for now just for testing tweets are taken as the training tweets 
+	#tweets=tt # for now just for testing tweets are taken as the training tweets 
 	tweetsinfo[entity]=[]
 	tweetsinfo[entity].append(len(tweets))
 	pos=0
@@ -430,7 +449,10 @@ for entity in dic.keys():
 	tweetsinfo[entity].append(pos)
 	tweetsinfo[entity].append(neg)
 	tweetsinfo[entity].append(neu)
-	break
+	cou=cou+1
+	if cou==5:
+		break
+#break
 
 for i in tweetsinfo.keys():
 	print i,tweetsinfo[i]
